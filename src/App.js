@@ -1,10 +1,18 @@
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import MainLayout from "./layout/MainLayout";
+import StudentsPage from "./pages/StudentsPage";
+
 function App() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <h1 className="text-4xl font-bold text-blue-700">
-        Hawks Check Frontend 🦅
-      </h1>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<MainLayout />}>
+          <Route index element={<Navigate to="/students" />} />
+          <Route path="students" element={<StudentsPage />} />
+          {/* Você pode adicionar outras rotas como presences e reports aqui */}
+        </Route>
+      </Routes>
+    </Router>
   );
 }
 
