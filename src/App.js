@@ -1,17 +1,24 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import MainLayout from "./layout/MainLayout";
-import StudentsPage from "./pages/StudentsPage";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Sidebar from './components/Sidebar'; // seu menu lateral
+import HomePage from './pages/HomePage';
+import StudentsPage from './pages/StudentsPage';
+import AddStudentPage from './pages/AddStudentPage';
 
 function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<MainLayout />}>
-          <Route index element={<Navigate to="/students" />} />
-          <Route path="students" element={<StudentsPage />} />
-          {/* Você pode adicionar outras rotas como presences e reports aqui */}
-        </Route>
-      </Routes>
+      <div className="flex">
+        <Sidebar /> {/* A barra lateral sempre visível */}
+        
+        <div className="flex-1 p-4">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/students" element={<StudentsPage />} />
+            <Route path="/add-student" element={<AddStudentPage />} />
+            {/* Adicione outras rotas aqui */}
+          </Routes>
+        </div>
+      </div>
     </Router>
   );
 }

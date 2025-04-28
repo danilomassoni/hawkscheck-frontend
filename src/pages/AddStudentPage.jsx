@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const AddStudentPage = () => {
     const [name, setName] = useState("");
@@ -9,7 +9,7 @@ const AddStudentPage = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -26,7 +26,7 @@ const AddStudentPage = () => {
             .post("http://localhost:8080/api/students", { name, rm, team}) 
             .then((response) => {
                 setLoading(false);
-                history.push("/students");
+                navigate.push("/students");
             })
             .cathc((err) => {
                 setLoading(false);
@@ -92,15 +92,5 @@ const AddStudentPage = () => {
             
         export default AddStudentPage;
     
-
-
-
-
-
-
-
-
-
-
-
-}
+// This code defines a React component for adding a new student. It includes form fields for the student's name, RM, and team, and handles form submission with validation and error handling. The component uses Axios to send a POST request to the server and redirects to the students page upon success.
+// The component also includes loading and error states to provide feedback to the user during the submission process. The form is styled using Tailwind CSS classes for a clean and modern look.
