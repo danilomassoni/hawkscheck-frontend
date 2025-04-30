@@ -1,47 +1,33 @@
+// src/components/Sidebar.jsx
 import React from "react";
-import { NavLink } from "react-router-dom";
-import { Home, Users, Plus } from "lucide-react";
+import { Link } from "react-router-dom"; // Para navegação entre páginas
 
 const Sidebar = () => {
   return (
-    <aside className="w-64 bg-gray-100 min-h-screen p-6 border-r">
-      <h2 className="text-2xl font-bold text-red-600 mb-6">HawksCheck</h2>
-      <nav className="flex flex-col gap-4">
-        <NavLink
-          to="/"
-          className={({ isActive }) =>
-            `flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-200 ${
-              isActive ? "bg-gray-200 font-semibold" : ""
-            }`
-          }
-        >
-          <Home className="w-5 h-5" />
-          Início
-        </NavLink>
-        <NavLink
-          to="/students"
-          className={({ isActive }) =>
-            `flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-200 ${
-              isActive ? "bg-gray-200 font-semibold" : ""
-            }`
-          }
-        >
-          <Users className="w-5 h-5" />
-          Alunos
-        </NavLink>
-        <NavLink
-          to="/students/add"
-          className={({ isActive }) =>
-            `flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-200 ${
-              isActive ? "bg-gray-200 font-semibold" : ""
-            }`
-          }
-        >
-          <Plus className="w-5 h-5" />
-          Adicionar Aluno
-        </NavLink>
+    <div className="w-64 bg-gray-800 text-white h-full fixed left-0 top-0">
+      <div className="p-4">
+        <h2 className="text-xl font-semibold">Menu</h2>
+      </div>
+      <nav className="space-y-4">
+        <ul>
+          <li>
+            <Link to="/" className="text-white hover:text-red-600 p-2 block">
+              Home
+            </Link>
+          </li>
+          <li>
+            <Link to="/add-student" className="text-white hover:text-red-600 p-2 block">
+              Adicionar Aluno
+            </Link>
+          </li>
+          <li>
+            <Link to="/students" className="text-white hover:text-red-600 p-2 block">
+              Listar Alunos
+            </Link>
+          </li>
+        </ul>
       </nav>
-    </aside>
+    </div>
   );
 };
 
