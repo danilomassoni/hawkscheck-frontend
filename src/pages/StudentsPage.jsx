@@ -1,3 +1,4 @@
+// src/pages/StudentsPage.jsx
 import React, { useEffect, useState } from "react";
 import { getStudents } from "../api/api";
 
@@ -10,7 +11,7 @@ const StudentsPage = () => {
         const data = await getStudents();
         setStudents(data);
       } catch (error) {
-        console.error("Erro ao carregar estudantes", error);
+        console.error("Erro ao carregar alunos:", error);
       }
     };
 
@@ -19,15 +20,11 @@ const StudentsPage = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-xl font-bold text-red-600 mb-4">Lista de Alunos</h1>
-      <ul className="space-y-4">
+      <h1 className="text-xl font-bold text-red-600 mb-4">Todos os Alunos</h1>
+      <ul className="space-y-2">
         {students.map((student) => (
-          <li
-            key={student.id}
-            className="bg-white shadow rounded p-4 border border-gray-200"
-          >
-            <h2 className="font-semibold text-lg">{student.name}</h2>
-            <p className="text-gray-600">{student.email}</p>
+          <li key={student.id} className="border p-3 rounded shadow-sm">
+            {student.name}
           </li>
         ))}
       </ul>

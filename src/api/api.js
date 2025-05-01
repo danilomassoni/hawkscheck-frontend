@@ -27,6 +27,13 @@ export const addStudent = async (studentData) => {
   return response.data;
 };
 
+export const getStudentsByTeam = async (teamId) => {
+  const response = await api.get(`/teams/${teamId}/students`);
+  return response.data;
+};
+
+
+
 // Exporta a instância caso precise usar diretamente
 export default api;
 

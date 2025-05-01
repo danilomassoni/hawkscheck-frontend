@@ -1,64 +1,44 @@
+// src/pages/AddStudentPage.jsx
 import React, { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { addStudent } from "../api/api";
-import { useNavigate } from "react-router-dom";
 
 const AddStudentPage = () => {
+  const [name, setName] = useState("");
+  const { teamId } = useParams();
   const navigate = useNavigate();
-
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-  });
-
-  const handleChange = (e) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const studentData = { name };
+    if (teamId) studentData.teamId = teamId;
+
     try {
-      await addStudent(formData);
-      navigate("/students"); // Redireciona após adicionar com sucesso
+      await addStudent(studentData);
+      navigate(teamId ? `/teams/${teamId}/students` : "/students");
     } catch (error) {
       console.error("Erro ao adicionar aluno:", error);
     }
   };
 
   return (
-    <div className="p-6 max-w-xl mx-auto">
-      <h1 className="text-xl font-bold text-red-600 mb-4">Adicionar Novo Aluno</h1>
-      <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded shadow">
-        <div>
-          <label className="block font-medium">Nome:</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            className="w-full border p-2 rounded"
-          />
-        </div>
-        <div>
-          <label className="block font-medium">E-mail:</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            className="w-full border p-2 rounded"
-          />
-        </div>
+    <div className="p-6">
+      <h1 className="text-xl font-bold text-red-600 mb-4">Adicionar Aluno</h1>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          type="text"
+          placeholder="Nome do aluno"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="border border-gray-300 rounded px-3 py-2 w-full"
+          required
+        />
         <button
           type="submit"
-          className="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700"
+          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
         >
-          Adicionar Aluno
+          Adicionar
         </button>
       </form>
     </div>
