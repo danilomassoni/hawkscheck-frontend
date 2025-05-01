@@ -1,44 +1,96 @@
 // src/pages/AddStudentPage.jsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "../api/api";
 import { useNavigate, useParams } from "react-router-dom";
-import { addStudent } from "../api/api";
 
 const AddStudentPage = () => {
-  const [name, setName] = useState("");
-  const { teamId } = useParams();
   const navigate = useNavigate();
+  const { teamId } = useParams(); // se vier da rota de uma equipe
+  const [name, setName] = useState("");
+  const [rm, setRm] = useState("");
+  const [teams, setTeams] = useState([]);
+  const [selectedTeamId, setSelectedTeamId] = useState(teamId || "");
+
+  useEffect(() => {
+    const fetchTeams = async () => {
+      try {
+        const response = await axios.get("/teams");
+        setTeams(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar equipes:", error);
+      }
+    };
+
+    fetchTeams();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const studentData = { name };
-    if (teamId) studentData.teamId = teamId;
+    if (!name || !rm || !selectedTeamId) {
+      alert("Preencha todos os campos.");
+      return;
+    }
 
     try {
-      await addStudent(studentData);
-      navigate(teamId ? `/teams/${teamId}/students` : "/students");
+      await axios.post("/students", {
+        name,
+        rm,
+        teamId: selectedTeamId,
+      });
+      alert("Aluno adicionado com sucesso!");
+      navigate(`/teams/${selectedTeamId}/students`);
     } catch (error) {
       console.error("Erro ao adicionar aluno:", error);
+      alert("Erro ao adicionar aluno.");
     }
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-xl font-bold text-red-600 mb-4">Adicionar Aluno</h1>
+    <div className="bg-white p-6 rounded shadow-md max-w-md mx-auto">
+      <h2 className="text-2xl font-semibold mb-4 text-red-600">Adicionar Aluno</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="text"
-          placeholder="Nome do aluno"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="border border-gray-300 rounded px-3 py-2 w-full"
-          required
-        />
+        <div>
+          <label className="block text-gray-700 font-medium">Nome:</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full border border-gray-300 rounded px-4 py-2"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-gray-700 font-medium">RM:</label>
+          <input
+            type="text"
+            value={rm}
+            onChange={(e) => setRm(e.target.value)}
+            className="w-full border border-gray-300 rounded px-4 py-2"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-gray-700 font-medium">Equipe:</label>
+          <select
+            value={selectedTeamId}
+            onChange={(e) => setSelectedTeamId(e.target.value)}
+            className="w-full border border-gray-300 rounded px-4 py-2"
+            required
+          >
+            <option value="">Selecione uma equipe</option>
+            {teams.map((team) => (
+              <option key={team.id} value={team.id}>
+                {team.name}
+              </option>
+            ))}
+          </select>
+        </div>
         <button
           type="submit"
           className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
         >
-          Adicionar
+          Salvar
         </button>
       </form>
     </div>

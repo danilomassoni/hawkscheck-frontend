@@ -6,6 +6,9 @@ import HomePage from "./pages/HomePage";
 import StudentsPage from "./pages/StudentsPage";
 import AddStudentPage from "./pages/AddStudentPage";
 import TeamStudentsPage from "./pages/TeamStudentsPage";
+import AddTeamPage from "./pages/AddTeamPage";
+import AddUserPage from "./pages/AddUserPage";
+import UsersPage from "./pages/UsersPage";
 
 const App = () => {
   return (
@@ -19,6 +22,9 @@ const App = () => {
             <Route path="/add-student" element={<AddStudentPage />} />
             <Route path="/teams/:teamId/add-student" element={<AddStudentPage />} />
             <Route path="/teams/:teamId/students" element={<TeamStudentsPage />} />
+            <Route path="/add-team" element={<AddTeamPage />} /> 
+            <Route path="/add-user" element={<AddUserPage />} />
+            <Route path="/users" element={<UsersPage />} />
           </Routes>
         </main>
       </div>

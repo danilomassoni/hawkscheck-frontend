@@ -16,7 +16,19 @@ const Sidebar = () => {
         <Link to="/add-student" className="text-gray-700 hover:text-red-600 font-medium">
           Adicionar Aluno
         </Link>
+        <Link to="/add-team" className="text-gray-700 hover:text-red-600 font-medium">
+          Adicionar Equipe
+        </Link>
+        <Link to="/add-user" className="text-gray-700 hover:text-red-600 font-medium">
+          Cadastrar Usuário
+        </Link>
+        <Link to="/users" className="text-gray-700 hover:text-red-600 font-medium">
+          Usuários
+        </Link>
       </nav>
+      
+        
+
     </aside>
   );
 };
