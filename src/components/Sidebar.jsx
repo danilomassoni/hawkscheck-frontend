@@ -25,6 +25,15 @@ const Sidebar = () => {
         <Link to="/users" className="text-gray-700 hover:text-red-600 font-medium">
           Usuários
         </Link>
+        <button
+  onClick={() => {
+    localStorage.clear();
+    window.location.href = "/";
+  }}
+  className="text-white bg-red-500 rounded px-4 py-2"
+>
+  Logout
+</button>
       </nav>
       
         
