@@ -16,19 +16,21 @@ api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+  } else {
+    delete config.headers['Authorization'];
   }
   return config;
 });
 
 // =================== Funções utilitárias ===================
 
-export const login = async ({ email, password }) => {
+/*export const login = async ({ email, password }) => {
   const response = await axios.post(`${API_BASE_URL}/auth/login`, {
     email,
     password,
   });
   return response.data; // deve conter { token, user }
-};
+};*/
 
 export const getTeams = async () => {
   const response = await api.get("/teams");
