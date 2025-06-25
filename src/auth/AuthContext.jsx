@@ -1,58 +1,48 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { jwtDecode } from "jwt-decode";
+import { createContext, useContext, useEffect, useState } from "react";
 
 // Criação do contexto
 const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null); // { name, email, paper }
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null); // Nome, role, etc.
   const [token, setToken] = useState(null);
 
+  // Carrega token do localStorage ao iniciar
   useEffect(() => {
-    // Ao iniciar, busca token e decodifica se existir
     const storedToken = localStorage.getItem("token");
-    if (storedToken) {
-      const decoded = jwt_decode(storedToken);
-      setUser({
-        name: decoded.name,
-        email: decoded.sub,
-        paper: decoded.paper,
-      });
+    const storedUser = localStorage.getItem("user");
+
+    if (storedToken && storedUser) {
       setToken(storedToken);
+      setUser(JSON.parse(storedUser));
     }
   }, []);
 
-  const login = (data) => {
-    const { token } = data;
-    const decoded = jwt_decode(token);
+  // Função para login
+  const login = (authData) => {
+    setToken(authData.token);
+    setUser({ name: authData.name, role: authData.role });
 
-    const userData = {
-      name: decoded.name,
-      email: decoded.sub,
-      paper: decoded.paper,
-    };
-
-    setUser(userData);
-    setToken(token);
-    localStorage.setItem("token", token);
+    localStorage.setItem("token", authData.token);
+    localStorage.setItem("user", JSON.stringify({ name: authData.name, role: authData.role }));
   };
 
+  // Função para logout
   const logout = () => {
-    setUser(null);
     setToken(null);
+    setUser(null);
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
   };
-
-  const isAdmin = () => user?.paper === "ADMIN";
-  const isMentor = () => user?.paper === "MENTOR";
-  const isStudent = () => user?.paper === "STUDENT";
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, isAdmin, isMentor, isStudent }}>
+    <AuthContext.Provider value={{ user, token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
-// Hook de acesso
-export const useAuth = () => useContext(AuthContext);
+// Hook customizado para usar o AuthContext
+export function useAuth() {
+  return useContext(AuthContext);
+}
