@@ -4,6 +4,8 @@ import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import ProtectedRoute from "./auth/ProtectedRoute";
 
+
+
 export default function App() {
   return (
     <Routes>
