@@ -1,16 +1,16 @@
-// src/main.jsx
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';  // Aqui você importa o arquivo CSS que contém as regras do Tailwind
-import App from './App';  // Importa o componente raiz (App)
-// src/main.jsx
-import { AuthProvider } from './auth/AuthContext';  // Importa o provedor de autenticação 
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App.jsx";
+import { BrowserRouter } from "react-router-dom";
+import { AuthProvider } from "./auth/AuthContext.jsx";
+import "./index.css";
 
-
-ReactDOM.createRoot(document.getElementById('root')).render(
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
+    <BrowserRouter>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );

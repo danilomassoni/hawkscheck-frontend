@@ -1,48 +1,58 @@
-import { createContext, useContext, useEffect, useState } from "react";
+// src/auth/AuthContext.jsx
+import React, { createContext, useContext, useState, useEffect } from "react";
+import api from "../api/api";
+import { useNavigate } from "react-router-dom";
 
-// Criação do contexto
 const AuthContext = createContext();
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null); // Nome, role, etc.
-  const [token, setToken] = useState(null);
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
-  // Carrega token do localStorage ao iniciar
+  // Verifica token ao carregar a aplicação
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user");
-
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
+    const token = localStorage.getItem("token");
+    if (token) {
+      fetchUserData(token);
     }
   }, []);
 
-  // Função para login
-  const login = (authData) => {
-    setToken(authData.token);
-    setUser({ name: authData.name, role: authData.role });
-
-    localStorage.setItem("token", authData.token);
-    localStorage.setItem("user", JSON.stringify({ name: authData.name, role: authData.role }));
+  const fetchUserData = async (token) => {
+    try {
+      const response = await api.get("/auth/me");
+      setUser(response.data);
+    } catch (err) {
+      console.error("Erro ao buscar dados do usuário:", err);
+      logout();
+    }
   };
 
-  // Função para logout
+  const login = async (email, password) => {
+    try {
+      const response = await api.post("/auth/login", { email, password });
+
+      const { token, name, role, email: userEmail } = response.data;
+
+      localStorage.setItem("token", token);
+      setUser({ name, role, email: userEmail });
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Login failed:", error);
+      throw new Error("Credenciais inválidas");
+    }
+  };
+
   const logout = () => {
-    setToken(null);
-    setUser(null);
     localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    setUser(null);
+    navigate("/login");
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
-// Hook customizado para usar o AuthContext
-export function useAuth() {
-  return useContext(AuthContext);
-}
+export const useAuth = () => useContext(AuthContext);

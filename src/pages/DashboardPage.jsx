@@ -7,7 +7,7 @@ export default function DashboardPage() {
     <div className="h-screen flex flex-col justify-center items-center bg-gray-100 text-center">
       <div className="bg-white p-6 rounded-xl shadow-md space-y-4 w-full max-w-md">
         <h1 className="text-2xl font-bold">Bem-vindo ao Dashboard!</h1>
-        
+
         {user ? (
           <>
             <p className="text-gray-700">
