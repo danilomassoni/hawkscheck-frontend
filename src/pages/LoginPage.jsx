@@ -20,11 +20,15 @@ export default function LoginPage() {
       if (!response.ok) throw new Error(await response.text());
 
       const data = await response.json();
+
       login({
         token: data.token,
         name: data.name,
-        role: data.paper,
+        role: data.paperEnum,
+        email: email,
       });
+
+      Navigate("/dashboard");
     } catch (err) {
       setError(err.message || "Erro ao fazer login");
     }

@@ -5,13 +5,17 @@ export default function DashboardPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold">Bem-vindo ao Dashboard!</h1>
-      <p className="mt-2">Nome: {user?.name}</p>
-      <p>Email: {localStorage.getItem("email")}</p>
-      <p>Papel: {user?.role}</p>
+      <h1 className="text-3xl font-bold mb-4">Bem-vindo ao Dashboard!</h1>
+
+      <div className="space-y-2">
+        <p><strong>Nome:</strong> {user?.name}</p>
+        <p><strong>Email:</strong> {user?.email || localStorage.getItem("email")}</p>
+        <p><strong>Papel:</strong> {user?.role}</p>
+      </div>
+
       <button
-        className="mt-4 bg-red-600 text-white px-4 py-2 rounded"
         onClick={logout}
+        className="mt-6 bg-red-600 text-white px-4 py-2 rounded"
       >
         Sair
       </button>

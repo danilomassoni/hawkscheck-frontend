@@ -12,11 +12,12 @@ export function AuthProvider({ children }) {
     return token ? { token, name, role } : null;
   });
 
-  const login = ({ token, name, role }) => {
+  const login = ({ token, name, role, email }) => {
     localStorage.setItem("token", token);
     localStorage.setItem("name", name);
     localStorage.setItem("role", role);
-    setUser({ token, name, role });
+    localStorage.setItem("email", email);
+    setUser({ token, name, role, email });
     navigate("/dashboard");
   };
 
