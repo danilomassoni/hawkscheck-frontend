@@ -1,24 +1,21 @@
 import { useAuth } from "../auth/AuthContext";
+import DashboardAdminPage from "./DashboardAdminPage";
+import DashboardMentorPage from "./DashboardMentorPage";
+import DashboardStudentPage from "./DashboardStudentPage";
 
 export default function DashboardPage() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
-  return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold mb-4">Bem-vindo ao Dashboard!</h1>
+  if (!user) return <div>Carregando...</div>;
 
-      <div className="space-y-2">
-        <p><strong>Nome:</strong> {user?.name}</p>
-        <p><strong>Email:</strong> {user?.email || localStorage.getItem("email")}</p>
-        <p><strong>Papel:</strong> {user?.role}</p>
-      </div>
-
-      <button
-        onClick={logout}
-        className="mt-6 bg-red-600 text-white px-4 py-2 rounded"
-      >
-        Sair
-      </button>
-    </div>
-  );
+  switch (user.role) {
+    case "ADMIN":
+      return <DashboardAdminPage />;
+    case "MENTOR":
+      return <DashboardMentorPage />;
+    case "STUDENT":
+      return <DashboardStudentPage />;
+    default:
+      return <div>Permissão desconhecida</div>;
+  }
 }
