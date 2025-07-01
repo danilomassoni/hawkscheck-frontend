@@ -1,25 +1,26 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
-import { AuthProvider } from "./auth/AuthContext";
-import ProtectedRoute from "./auth/ProtectedRoute";
+import TeamPage from "./pages/TeamPage";
+import ProfilePage from "./pages/ProfilePage";
+import PrivateLayout from "./layouts/PrivateLayout";
 
-export default function App() {
+
+
+function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <DashboardPage />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </AuthProvider>
-    </BrowserRouter>
+    <Routes>
+      <Route path="/" element={<Navigate to="/login" />} />
+      <Route path="/login" element={<LoginPage />} />
+      
+      {/* Rotas protegidas com Sidebar */}
+      <Route element={<PrivateLayout />}>
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/team" element={<TeamPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+      </Route>
+    </Routes>
   );
 }
+
+export default App;

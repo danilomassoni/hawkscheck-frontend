@@ -1,45 +1,57 @@
-// src/components/Sidebar.jsx
-import React from "react";
+import { useAuth } from "../auth/AuthContext";
 import { Link } from "react-router-dom";
 
-const Sidebar = () => {
-  return (
-    <aside className="w-64 bg-white shadow-md min-h-screen p-6">
-      <h1 className="text-2xl font-bold text-red-600 mb-8">Hawks Check</h1>
-      <nav className="flex flex-col space-y-4">
-        <Link to="/" className="text-gray-700 hover:text-red-600 font-medium">
-          Início
-        </Link>
-        <Link to="/students" className="text-gray-700 hover:text-red-600 font-medium">
-          Todos os Alunos
-        </Link>
-        <Link to="/add-student" className="text-gray-700 hover:text-red-600 font-medium">
-          Adicionar Aluno
-        </Link>
-        <Link to="/add-team" className="text-gray-700 hover:text-red-600 font-medium">
-          Adicionar Equipe
-        </Link>
-        <Link to="/add-user" className="text-gray-700 hover:text-red-600 font-medium">
-          Cadastrar Usuário
-        </Link>
-        <Link to="/users" className="text-gray-700 hover:text-red-600 font-medium">
-          Usuários
-        </Link>
-        <button
-  onClick={() => {
-    localStorage.clear();
-    window.location.href = "/";
-  }}
-  className="text-white bg-red-500 rounded px-4 py-2"
->
-  Logout
-</button>
-      </nav>
-      
-        
+export default function Sidebar() {
+  const { user } = useAuth();
 
+  const commonLinks = [
+    { to: "/dashboard", label: "Início" },
+  ];
+
+  const mentorLinks = [
+    { to: "/team", label: "Minha Equipe" },
+    { to: "/students", label: "Alunos" },
+  ];
+
+  const studentLinks = [
+    { to: "/profile", label: "Meu Perfil" },
+    { to: "/team/view", label: "Minha Equipe" },
+  ];
+
+  const adminLinks = [
+    { to: "/admin/users", label: "Gerenciar Usuários" },
+    { to: "/admin/reports", label: "Relatórios" },
+  ];
+
+  const getRoleLinks = () => {
+    switch (user?.role) {
+      case "MENTOR":
+        return mentorLinks;
+      case "STUDENT":
+        return studentLinks;
+      case "ADMIN":
+        return adminLinks;
+      default:
+        return [];
+    }
+  };
+
+  const links = [...commonLinks, ...getRoleLinks()];
+
+  return (
+    <aside className="w-64 h-screen bg-gray-800 text-white p-4 fixed">
+      <h2 className="text-xl font-bold mb-6">HawksCheck</h2>
+      <nav className="space-y-3">
+        {links.map((link) => (
+          <Link
+            key={link.to}
+            to={link.to}
+            className="block hover:bg-gray-700 px-3 py-2 rounded"
+          >
+            {link.label}
+          </Link>
+        ))}
+      </nav>
     </aside>
   );
-};
-
-export default Sidebar;
+}
