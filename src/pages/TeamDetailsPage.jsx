@@ -7,14 +7,27 @@ export default function TeamDetailsPage() {
   const { teamId } = useParams();
   const [tasks, setTasks] = useState([]);
   const [students, setStudents] = useState([]);
+  const [team, setTeam] = useState(null); // ⬅️ novo: armazena dados do time
   const [showForm, setShowForm] = useState(false);
   const [editTask, setEditTask] = useState(null);
 
   const fetchData = async () => {
-    const taskRes = await api.get(`/tasks/by-team/${teamId}`);
-    const studentRes = await api.get(`/teams/${teamId}/students`);
-    setTasks(taskRes.data);
-    setStudents(studentRes.data);
+    try {
+      const taskRes = await api.get(`/task`); // ⚠️ endpoint atual do seu backend
+      const studentRes = await api.get(`/teams/${teamId}/students`);
+      const teamRes = await api.get(`/teams/${teamId}`);
+
+      // ⬅️ Filtro apenas as tarefas do time
+      const filteredTasks = taskRes.data.filter(
+        (task) => task.teamId === parseInt(teamId)
+      );
+
+      setTasks(filteredTasks);
+      setStudents(studentRes.data);
+      setTeam(teamRes.data);
+    } catch (err) {
+      console.error("Erro ao buscar dados:", err);
+    }
   };
 
   useEffect(() => {
@@ -24,9 +37,9 @@ export default function TeamDetailsPage() {
   const handleCreate = async (formData) => {
     try {
       if (editTask) {
-        await api.put(`/tasks/${editTask.id}`, formData);
+        await api.put(`/task/${editTask.id}`, formData);
       } else {
-        await api.post(`/tasks`, { ...formData, teamId: parseInt(teamId) });
+        await api.post(`/task`, { ...formData, teamId: parseInt(teamId) });
       }
       setShowForm(false);
       setEditTask(null);
@@ -38,14 +51,16 @@ export default function TeamDetailsPage() {
 
   const handleDelete = async (taskId) => {
     if (window.confirm("Tem certeza que deseja excluir esta tarefa?")) {
-      await api.delete(`/tasks/${taskId}`);
+      await api.delete(`/task/${taskId}`);
       await fetchData();
     }
   };
 
   return (
     <div className="p-6">
-      <h1 className="text-xl font-bold mb-4">Tarefas da Equipe</h1>
+      <h1 className="text-2xl font-bold mb-2">
+        Equipe: {team?.name || "Carregando..."}
+      </h1>
 
       {!showForm ? (
         <button
@@ -59,6 +74,10 @@ export default function TeamDetailsPage() {
           onSubmit={handleCreate}
           students={students}
           initialData={editTask}
+          onCancel={() => {
+            setEditTask(null);
+            setShowForm(false);
+          }}
         />
       )}
 
@@ -71,7 +90,9 @@ export default function TeamDetailsPage() {
             <p>
               {task.startDate} até {task.endDate}
             </p>
-            <p>Status: {task.status} | Prioridade: {task.priority}</p>
+            <p>
+              Status: {task.status} | Prioridade: {task.priority}
+            </p>
             <div className="space-x-2 mt-2">
               <button
                 onClick={() => {

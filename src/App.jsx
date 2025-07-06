@@ -7,6 +7,8 @@ import PrivateLayout from "./layouts/PrivateLayout";
 import TaskPage from "./pages/TaskPage";
 import StudentTaskPage from "./pages/StudentTaskPage";
 import TeamDetailsPage from "./pages/TeamDetailsPage";
+import Layout from "./components/Layout"; // ajuste o caminho se necessário
+
 
 
 
@@ -15,10 +17,9 @@ function App() {
     <Routes>
       <Route path="/" element={<Navigate to="/login" />} />
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/tasks" element={<TaskPage />} /> {/* Mentor */}
-      <Route path="/my-tasks" element={<StudentTaskPage />} /> {/* Estudante */}
-      <Route path="/teams" element={<TeamPage />} />
-      <Route path="/teams/:teamId" element={<TeamDetailsPage />} />
+      
+      
+      
       
       {/* Rotas protegidas com Sidebar */}
       <Route element={<PrivateLayout />}>
@@ -27,8 +28,11 @@ function App() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/tasks" element={<TaskPage />} /> {/* Mentor */}
         <Route path="/my-tasks" element={<StudentTaskPage />} /> {/* Estudante */}
-        <Route path="/teams" element={<TeamPage />} />
-        <Route path="/teams/:teamId" element={<TeamDetailsPage />} />
+        <Route path="/teams/:teamId" element={<Layout><TeamDetailsPage /></Layout>} />
+        <Route path="/team" element={<Layout><TeamPage /></Layout>} />
+
+        
+        <Route path="/teams/:id" element={<TeamDetailsPage />} /> {/* 👈 aqui */}
         
 
       </Route>
