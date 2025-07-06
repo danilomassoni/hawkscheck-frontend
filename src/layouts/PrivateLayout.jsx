@@ -8,14 +8,13 @@ export default function PrivateLayout() {
   if (!user) return <Navigate to="/login" />;
 
   return (
-    <div className="flex h-screen">
-      {/* Sidebar à esquerda */}
+    <>
       <Sidebar />
 
-      {/* Conteúdo da página */}
-      <main className="flex-1 bg-gray-100 p-6 overflow-y-auto">
+      {/* Conteúdo da página com margem à esquerda para não ficar atrás da Sidebar */}
+      <main className="ml-64 p-6 bg-gray-100 min-h-screen overflow-y-auto">
         <Outlet />
       </main>
-    </div>
+    </>
   );
 }
