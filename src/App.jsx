@@ -7,6 +7,7 @@ import PrivateLayout from "./layouts/PrivateLayout";
 import TaskPage from "./pages/TaskPage";
 import StudentTaskPage from "./pages/StudentTaskPage";
 import TeamDetailsPage from "./pages/TeamDetailsPage";
+import TeamStudentsPage from "./pages/TeamStudentsPage";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/tasks" element={<TaskPage />} />
         <Route path="/my-tasks" element={<StudentTaskPage />} />
         <Route path="/teams/:teamId" element={<TeamDetailsPage />} />
+        <Route path="/teams/:teamId/students" element={<TeamStudentsPage />} />
       </Route>
     </Routes>
   );
