@@ -8,6 +8,7 @@ import TaskPage from "./pages/TaskPage";
 import StudentTaskPage from "./pages/StudentTaskPage";
 import TeamDetailsPage from "./pages/TeamDetailsPage";
 import TeamStudentsPage from "./pages/TeamStudentsPage";
+import TeamAttendancePage from "./pages/TeamAttendancePage";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/my-tasks" element={<StudentTaskPage />} />
         <Route path="/teams/:teamId" element={<TeamDetailsPage />} />
         <Route path="/teams/:teamId/students" element={<TeamStudentsPage />} />
+        <Route path="/teams/:teamId/attendance" element={<TeamAttendancePage />} />
       </Route>
     </Routes>
   );

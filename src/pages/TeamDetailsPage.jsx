@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/api";
 import ModalAddStudent from "../components/ModalAddStudent";
-import { useNavigate } from "react-router-dom";
 
 export default function TeamDetailsPage() {
   const { teamId } = useParams();
+  const navigate = useNavigate();
+
   const [team, setTeam] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAddStudentModal, setShowAddStudentModal] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTeam = async () => {
@@ -36,7 +36,7 @@ export default function TeamDetailsPage() {
     <div className="p-6 space-y-4">
       <h1 className="text-2xl font-bold">Equipe: {team?.name}</h1>
 
-      <div className="flex gap-4">
+      <div className="flex gap-4 flex-wrap">
         <button
           className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
           onClick={() => setShowAddStudentModal(true)}
@@ -44,13 +44,25 @@ export default function TeamDetailsPage() {
           Adicionar Aluno
         </button>
 
-        <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded">
+        <button
+          className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded"
+          onClick={() => navigate(`/teams/${teamId}/tasks`)}
+        >
           Ver Tarefas
         </button>
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+
+        <button
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
           onClick={() => navigate(`/teams/${teamId}/students`)}
-          >
+        >
           Ver Alunos
+        </button>
+
+        <button
+          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded"
+          onClick={() => navigate(`/teams/${teamId}/attendance`)}
+        >
+          Registrar Presença
         </button>
       </div>
 
@@ -59,7 +71,7 @@ export default function TeamDetailsPage() {
           teamId={teamId}
           onClose={() => setShowAddStudentModal(false)}
           onStudentAdded={() => {
-            // Aqui você pode recarregar os alunos se quiser
+            // recarregar alunos se necessário
           }}
         />
       )}
