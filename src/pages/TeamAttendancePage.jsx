@@ -14,10 +14,11 @@ export default function TeamAttendancePage() {
     const fetchStudents = async () => {
       try {
         const res = await api.get(`/team/${teamId}/members`);
+        console.log("Estudantes carregados:", res.data);
         setStudents(res.data);
         const initialAttendance = {};
         res.data.forEach((s) => {
-          initialAttendance[s.id] = true; // Default: presente
+          initialAttendance[s.id] = true;
         });
         setAttendanceMap(initialAttendance);
       } catch (e) {
@@ -39,13 +40,15 @@ export default function TeamAttendancePage() {
 
   const handleSubmit = async () => {
     const payload = {
-      teamId: parseInt(teamId),
+      teamId: Number(teamId),
       date,
       records: Object.entries(attendanceMap).map(([studentId, present]) => ({
-        studentId: parseInt(studentId),
+        studentId: Number(studentId),
         present,
       })),
     };
+
+    console.log("Payload gerado:", JSON.stringify(payload, null, 2));
 
     try {
       await api.post("/attendance", payload);
@@ -74,13 +77,16 @@ export default function TeamAttendancePage() {
 
       <ul className="space-y-2">
         {students.map((student) => (
-          <li key={student.id} className="flex items-center justify-between bg-white p-3 border rounded">
+          <li
+            key={student.id}
+            className="flex items-center justify-between bg-white p-3 border rounded"
+          >
             <span>{student.name}</span>
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"
-                checked={attendanceMap[student.id] || false}
-                onChange={() => handleToggle(student.id)}
+                checked={!!attendanceMap[student?.id]}
+                onChange={() => student?.id && handleToggle(student.id)}
               />
               Presente
             </label>
