@@ -25,13 +25,11 @@ export default function ModalAddStudent({ teamId, onClose, onStudentAdded }) {
 
   const handleAdd = async () => {
     if (!selectedId) return alert("Selecione um aluno.");
-
     try {
       await api.post(`/team/${teamId}/add-student/${selectedId}`);
       onStudentAdded();
-      onClose();
-    } catch (e) {
-      console.error(e);
+    } catch (err) {
+      console.error(err);
       alert("Erro ao adicionar aluno.");
     }
   };

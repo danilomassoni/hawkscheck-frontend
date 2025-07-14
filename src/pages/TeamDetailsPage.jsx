@@ -8,6 +8,7 @@ export default function TeamDetailsPage() {
   const navigate = useNavigate();
 
   const [team, setTeam] = useState(null);
+  const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAddStudentModal, setShowAddStudentModal] = useState(false);
@@ -26,8 +27,27 @@ export default function TeamDetailsPage() {
       }
     };
 
+    const fetchStudents = async () => {
+      try {
+        const res = await api.get(`/team/${teamId}/members`);
+        setStudents(res.data);
+      } catch (err) {
+        console.error("Erro ao buscar alunos da equipe:", err);
+      }
+    };
+
     fetchTeam();
+    fetchStudents();
   }, [teamId]);
+
+  const fetchStudents = async () => {
+    try {
+      const res = await api.get(`/team/${teamId}/members`);
+      setStudents(res.data);
+    } catch (err) {
+      console.error("Erro ao buscar alunos da equipe:", err);
+    }
+  };
 
   if (loading) return <p className="p-6">Carregando equipe...</p>;
   if (error) return <p className="p-6 text-red-600">{error}</p>;
@@ -66,12 +86,34 @@ export default function TeamDetailsPage() {
         </button>
       </div>
 
+      <div>
+        <h2 className="text-lg font-semibold mt-6 mb-2">Alunos da Equipe</h2>
+        {students.length === 0 ? (
+          <p className="text-gray-600">Nenhum aluno na equipe.</p>
+        ) : (
+          <ul className="space-y-2">
+            {students.map((student) => (
+              <li
+                key={student.id}
+                className="bg-white p-4 rounded shadow flex justify-between items-center"
+              >
+                <div>
+                  <p className="font-semibold">{student.name}</p>
+                  <p className="text-sm text-gray-500">{student.email}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
       {showAddStudentModal && (
         <ModalAddStudent
           teamId={teamId}
           onClose={() => setShowAddStudentModal(false)}
           onStudentAdded={() => {
-            // recarregar alunos se necessário
+            fetchStudents(); // recarrega a lista de alunos
+            setShowAddStudentModal(false);
           }}
         />
       )}

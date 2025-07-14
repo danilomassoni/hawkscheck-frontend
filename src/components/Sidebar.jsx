@@ -9,7 +9,7 @@ export default function Sidebar() {
 
   const mentorLinks = [
     { to: "/team", label: "Minha Equipe" },
-    { to: "/students", label: "Alunos" },
+    { to: "/my-students", label: "Alunos" },
   ];
 
   const studentLinks = [

@@ -40,6 +40,20 @@ export default function EditTaskModal({ task, onClose, onSave }) {
     }
   };
 
+  const handleDelete = async () => {
+    const confirmed = window.confirm("Tem certeza que deseja excluir esta tarefa?");
+    if (!confirmed) return;
+
+    try {
+      await api.delete(`/task/${task.id}`);
+      onSave(); // atualiza a lista no TeamTasksPage
+      onClose();
+    } catch (err) {
+      console.error("Erro ao excluir tarefa:", err);
+    }
+  };
+
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
       <div className="bg-white p-6 rounded w-full max-w-lg">
@@ -82,11 +96,20 @@ export default function EditTaskModal({ task, onClose, onSave }) {
           ))}
         </div>
 
+        <div className="flex gap-2">
+            <button
+              onClick={handleDelete}
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+            >
+              Excluir
+            </button>
+
         <div className="flex justify-end gap-2">
           <button onClick={onClose} className="px-4 py-2 rounded bg-gray-300">Cancelar</button>
           <button onClick={handleSubmit} className="px-4 py-2 rounded bg-blue-600 text-white">Salvar</button>
         </div>
       </div>
+    </div>
     </div>
   );
 }

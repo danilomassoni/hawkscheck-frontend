@@ -10,6 +10,7 @@ import TeamDetailsPage from "./pages/TeamDetailsPage";
 import TeamStudentsPage from "./pages/TeamStudentsPage";
 import TeamAttendancePage from "./pages/TeamAttendancePage";
 import TeamTasksPage from "./pages/TeamTasksPage";
+import MyStudentsPage from "./pages/MyStudentsPage";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/teams/:teamId/students" element={<TeamStudentsPage />} />
         <Route path="/teams/:teamId/attendance" element={<TeamAttendancePage />} />
         <Route path="/teams/:teamId/tasks" element={<TeamTasksPage />} /> 
+        <Route path="/my-students" element={<MyStudentsPage />} />
         
         
       </Route>
