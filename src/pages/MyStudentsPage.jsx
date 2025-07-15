@@ -9,7 +9,7 @@ export default function MyStudentsPage() {
 
   const fetchMyStudents = async () => {
     try {
-      const res = await api.get("/user/my-students");
+      const res = await api.get("/users/my-students"); // ✅ Corrigido endpoint
       setStudents(res.data);
     } catch (err) {
       console.error("Erro ao buscar alunos:", err);
@@ -27,8 +27,6 @@ export default function MyStudentsPage() {
     setModalOpen(false);
   };
 
-  if (loading) return <p className="p-6">Carregando alunos...</p>;
-
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
@@ -41,7 +39,9 @@ export default function MyStudentsPage() {
         </button>
       </div>
 
-      {students.length === 0 ? (
+      {loading ? (
+        <p>Carregando alunos...</p>
+      ) : students.length === 0 ? (
         <p className="text-gray-600">Nenhum aluno cadastrado.</p>
       ) : (
         <ul className="space-y-2">
@@ -54,7 +54,9 @@ export default function MyStudentsPage() {
                 <p className="font-semibold">{student.name}</p>
                 <p className="text-sm text-gray-500">{student.email}</p>
               </div>
-              <span className="text-sm text-blue-600">{student.role || "Aluno"}</span>
+              <span className="text-sm text-blue-600">
+                {student.paper === "STUDENT" ? "Aluno" : student.paper}
+              </span>
             </li>
           ))}
         </ul>
