@@ -10,7 +10,7 @@ export default function ModalAddStudent({ teamId, onClose, onStudentAdded }) {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const res = await api.get("/users/students");
+        const res = await api.get("/users/my-students");
         setStudents(res.data);
       } catch (err) {
         console.error(err);
