@@ -9,7 +9,7 @@ export default function TaskModal({ isOpen, onClose, teamId, onTaskCreated }) {
     description: "",
     startDate: "",
     endDate: "",
-    priority: "MEDIUM",
+    priority: "MEDIA",
     status: "PENDING",
     studentIds: [],
   });
