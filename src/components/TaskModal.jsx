@@ -10,7 +10,7 @@ export default function TaskModal({ isOpen, onClose, teamId, onTaskCreated }) {
     startDate: "",
     endDate: "",
     priority: "MEDIA",
-    status: "PENDING",
+    status: "EM_ANDAMENTO",
     studentIds: [],
   });
 

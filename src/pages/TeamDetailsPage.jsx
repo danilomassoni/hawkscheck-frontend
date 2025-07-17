@@ -79,11 +79,31 @@ export default function TeamDetailsPage() {
         </button>
 
         <button
-          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded"
-          onClick={() => navigate(`/teams/${teamId}/attendance`)}
-        >
-          Registrar Presença
-        </button>
+        className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded"
+        onClick={() => navigate(`/teams/${teamId}/attendance`)}
+      >
+        Registrar Presença
+      </button>
+
+      <button
+        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+        onClick={async () => {
+          const confirmDelete = window.confirm("Tem certeza que deseja excluir esta equipe?");
+          if (!confirmDelete) return;
+
+          try {
+            await api.delete(`/team/${teamId}`);
+            alert("Equipe excluída com sucesso.");
+            navigate("/team");
+          } catch (error) {
+            console.error("Erro ao excluir equipe:", error);
+            alert("Ocorreu um erro ao excluir a equipe.");
+          }
+        }}
+      >
+        Excluir Equipe
+      </button>
+
       </div>
 
       <div>
