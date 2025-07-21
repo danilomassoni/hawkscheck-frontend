@@ -14,7 +14,7 @@ export default function Sidebar() {
 
   const studentLinks = [
     { to: "/profile", label: "Meu Perfil" },
-    { to: "/team/view", label: "Minha Equipe" },
+    { to: "/student/team", label: "Minha Equipe" },
   ];
 
   const adminLinks = [
