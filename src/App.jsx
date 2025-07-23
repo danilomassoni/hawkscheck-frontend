@@ -34,6 +34,8 @@ function App() {
         <Route path="/my-students" element={<MyStudentsPage />} />
         <Route path="/student/team" element={<StudentTeamDetailsPage />} />
         <Route path="/student/team/:id/tasks" element={<StudentTeamTasksPage />} />
+        <Route path="/student/team/:teamId/tasks" element={<StudentTeamTasksPage />} />
+
         
       </Route>
     </Routes>

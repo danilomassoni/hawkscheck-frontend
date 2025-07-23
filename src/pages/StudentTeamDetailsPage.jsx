@@ -36,7 +36,13 @@ export default function StudentTeamPage() {
 
       <div
         className="bg-white p-4 rounded shadow cursor-pointer hover:bg-gray-100"
-        onClick={() => navigate(`/student/team/${team.id}/tasks`)}
+        onClick={() => {
+          if (team?.id) {
+            navigate(`/student/team/${team.id}/tasks`);
+          } else {
+            console.warn("ID da equipe não disponível!");
+          }
+        }}
       >
         <h2 className="text-xl font-semibold">Nome da Equipe: {team?.name}</h2>
         <p className="text-gray-600">Mentor: {team?.mentorName}</p>
