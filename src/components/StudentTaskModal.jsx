@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import api from "../api/api";
 
 export default function StudentTaskModal({ isOpen, onClose, task, onStatusUpdated }) {
-  const [status, setStatus] = useState(task?.status || "");
+  const [status, setStatus] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (task) {
@@ -16,14 +17,17 @@ export default function StudentTaskModal({ isOpen, onClose, task, onStatusUpdate
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
     try {
       await api.put(`/task/${task.id}/status`, { status });
       alert("Status atualizado com sucesso.");
-      onStatusUpdated(task.id, status);
-      onClose();
+      onStatusUpdated(); // Notifica o parent para recarregar a lista
+      onClose();         // Fecha o modal
     } catch (err) {
       console.error("Erro ao atualizar status:", err);
       alert("Erro ao atualizar status.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -69,9 +73,10 @@ export default function StudentTaskModal({ isOpen, onClose, task, onStatusUpdate
             </button>
             <button
               type="submit"
-              className="px-4 py-2 rounded bg-blue-600 text-white"
+              disabled={submitting}
+              className="px-4 py-2 rounded bg-blue-600 text-white disabled:opacity-50"
             >
-              Atualizar Status
+              {submitting ? "Atualizando..." : "Atualizar Status"}
             </button>
           </div>
         </form>

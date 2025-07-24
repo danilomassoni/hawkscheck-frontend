@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../api/api";
-import StudentTaskModal from "../components/StudentTaskModal"; // ✅ importe o modal
+import StudentTaskModal from "../components/StudentTaskModal";
 
 const statusLabels = {
   NAO_INICIADA: "Não Iniciada",
@@ -13,25 +13,26 @@ export default function StudentTeamTasksPage() {
   const [tasks, setTasks] = useState([]);
   const [teamName, setTeamName] = useState("");
   const [loading, setLoading] = useState(true);
-  const [selectedTask, setSelectedTask] = useState(null); // ✅ novo estado para tarefa selecionada
-  const [modalOpen, setModalOpen] = useState(false);      // ✅ estado para abrir o modal
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const fetchTasks = async () => {
+    try {
+      setLoading(true);
+      const teamRes = await api.get("/team/myteamstudent");
+      const team = teamRes.data;
+      setTeamName(team.name);
+
+      const taskRes = await api.get(`/task/by-team/${team.id}`);
+      setTasks(taskRes.data);
+    } catch (error) {
+      console.error("Erro ao carregar tarefas:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const teamRes = await api.get("/team/myteamstudent");
-        const team = teamRes.data;
-        setTeamName(team.name);
-
-        const taskRes = await api.get(`/task/by-team/${team.id}`);
-        setTasks(taskRes.data);
-      } catch (error) {
-        console.error("Erro ao carregar tarefas:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchTasks();
   }, []);
 
@@ -73,7 +74,7 @@ export default function StudentTeamTasksPage() {
                   <li
                     key={task.id}
                     className="bg-white p-3 rounded shadow hover:bg-gray-100 cursor-pointer"
-                    onClick={() => handleTaskClick(task)} // ✅ clique mostra modal
+                    onClick={() => handleTaskClick(task)}
                   >
                     <h3 className="font-medium">{task.title}</h3>
                     <p className="text-xs text-gray-600">{task.description}</p>
@@ -94,6 +95,9 @@ export default function StudentTeamTasksPage() {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         task={selectedTask}
+        onStatusUpdated={() => {
+          fetchTasks(); // recarrega as tarefas após atualizar status
+        }}
       />
     </div>
   );
