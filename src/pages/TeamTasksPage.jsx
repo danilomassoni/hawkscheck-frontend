@@ -24,6 +24,7 @@ export default function TeamTasksPage() {
   const [filterPriority, setFilterPriority] = useState("");
   const [filterEndDate, setFilterEndDate] = useState("");
   const [searchText, setSearchText] = useState("");
+  const [filterStudent, setFilterStudent] = useState(""); // 👈 Novo estado
 
   const fetchTasks = async () => {
     try {
@@ -56,13 +57,19 @@ export default function TeamTasksPage() {
 
   const aplicarFiltro = () => {
     const filtradas = tasks.filter((task) => {
+          const studentNames = task.studentNames || [];
+    const alunoIncluido = filterStudent
+      ? studentNames.some(name =>
+          name.toLowerCase().includes(filterStudent.toLowerCase()))
+      : true;
       return (
         (!filterStatus || task.status === filterStatus) &&
         (!filterPriority || task.priority === filterPriority) &&
         (!filterEndDate || task.endDate === filterEndDate) &&
         (!searchText ||
           task.title.toLowerCase().includes(searchText.toLowerCase()) ||
-          task.topic?.toLowerCase().includes(searchText.toLowerCase()))
+          task.topic?.toLowerCase().includes(searchText.toLowerCase())) &&
+        alunoIncluido
       );
     });
     setFilteredTasks(filtradas);
@@ -73,6 +80,7 @@ export default function TeamTasksPage() {
     setFilterPriority("");
     setFilterEndDate("");
     setSearchText("");
+    setFilterStudent(""); // 👈 limpar também esse campo
     setFilteredTasks(tasks);
   };
 
@@ -136,6 +144,14 @@ export default function TeamTasksPage() {
           className="border p-2 rounded"
         />
 
+        <input
+          type="text"
+          placeholder="Filtrar por aluno"
+          value={filterStudent}
+          onChange={(e) => setFilterStudent(e.target.value)}
+          className="border p-2 rounded"
+        />
+
         <button
           onClick={aplicarFiltro}
           className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
@@ -171,7 +187,8 @@ export default function TeamTasksPage() {
                     <p className="text-xs text-gray-500 mt-1">
                       Início: {task.startDate} <br />
                       Fim: {task.endDate} <br />
-                      Prioridade: {task.priority}
+                      Prioridade: {task.priority} <br />
+                      Alunos: {task.studentNames?.join(", ") || "Não atribuídos"}
                     </p>
                   </li>
                 ))}
