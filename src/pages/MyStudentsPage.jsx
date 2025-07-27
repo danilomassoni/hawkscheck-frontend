@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 import StudentModal from "../components/StudentModal";
 
@@ -6,10 +7,11 @@ export default function MyStudentsPage() {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   const fetchMyStudents = async () => {
     try {
-      const res = await api.get("/users/my-students"); // ✅ Corrigido endpoint
+      const res = await api.get("/users/my-students");
       setStudents(res.data);
     } catch (err) {
       console.error("Erro ao buscar alunos:", err);
@@ -25,6 +27,10 @@ export default function MyStudentsPage() {
   const handleStudentCreated = (newStudent) => {
     setStudents((prev) => [...prev, newStudent]);
     setModalOpen(false);
+  };
+
+  const handleClick = (id) => {
+    navigate(`/student-details/${id}`);
   };
 
   return (
@@ -48,7 +54,8 @@ export default function MyStudentsPage() {
           {students.map((student) => (
             <li
               key={student.id}
-              className="flex justify-between items-center bg-white p-4 rounded shadow"
+              onClick={() => handleClick(student.id)}
+              className="cursor-pointer hover:bg-gray-100 flex justify-between items-center bg-white p-4 rounded shadow"
             >
               <div>
                 <p className="font-semibold">{student.name}</p>

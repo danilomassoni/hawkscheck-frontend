@@ -13,6 +13,9 @@ import TeamTasksPage from "./pages/TeamTasksPage";
 import MyStudentsPage from "./pages/MyStudentsPage";
 import StudentTeamDetailsPage from "./pages/StudentTeamDetailsPage";
 import StudentTeamTasksPage from "./pages/StudentTeamTasksPage";
+import MyAttendancePage from "./pages/MyAttendancePage";
+import StudentDetailsPage from "./pages/StudentDetailsPage";
+
 
 function App() {
   return (
@@ -35,6 +38,8 @@ function App() {
         <Route path="/student/team" element={<StudentTeamDetailsPage />} />
         <Route path="/student/team/:id/tasks" element={<StudentTeamTasksPage />} />
         <Route path="/student/team/:teamId/tasks" element={<StudentTeamTasksPage />} />
+        <Route path="/student/my-attendance" element={<MyAttendancePage />} />
+        <Route path="/mentor/students/:id" element={<StudentDetailsPage />} />
 
         
       </Route>
