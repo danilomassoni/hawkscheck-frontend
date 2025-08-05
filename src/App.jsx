@@ -15,6 +15,7 @@ import StudentTeamDetailsPage from "./pages/StudentTeamDetailsPage";
 import StudentTeamTasksPage from "./pages/StudentTeamTasksPage";
 import MyAttendancePage from "./pages/MyAttendancePage";
 import StudentDetailsPage from "./pages/StudentDetailsPage";
+import StudentAttendancePage from "./pages/StudentAttendancePage";
 
 
 function App() {
@@ -39,7 +40,8 @@ function App() {
         <Route path="/student/team/:id/tasks" element={<StudentTeamTasksPage />} />
         <Route path="/student/team/:teamId/tasks" element={<StudentTeamTasksPage />} />
         <Route path="/student/my-attendance" element={<MyAttendancePage />} />
-        <Route path="/mentor/students/:id" element={<StudentDetailsPage />} />
+        <Route path="/student-details/:id" element={<StudentDetailsPage />} />
+        <Route path="/student-attendance/:id" element={<StudentAttendancePage />} />
 
         
       </Route>
