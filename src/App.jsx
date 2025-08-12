@@ -17,6 +17,7 @@ import MyAttendancePage from "./pages/MyAttendancePage";
 import StudentDetailsPage from "./pages/StudentDetailsPage";
 import StudentAttendancePage from "./pages/StudentAttendancePage";
 import HistoricalStudentTasksPage from "./pages/HistoricalStudentTasksPage";
+import MessagePage from "./pages/MessagePage";
 
 
 function App() {
@@ -44,6 +45,7 @@ function App() {
         <Route path="/student-details/:id" element={<StudentDetailsPage />} />
         <Route path="/student-attendance/:id" element={<StudentAttendancePage />} />
         <Route path="/student-tasks/:id" element={<HistoricalStudentTasksPage />} />
+        <Route path="/messages" element={<MessagePage />} />
 
         
       </Route>

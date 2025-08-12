@@ -23,14 +23,17 @@ export default function Sidebar() {
     { to: "/admin/reports", label: "Relatórios" },
   ];
 
+  // Novo link para Mensagens
+  const messagesLink = [{ to: "/messages", label: "Mensagens" }];
+
   const getRoleLinks = () => {
     switch (user?.role) {
       case "MENTOR":
-        return mentorLinks;
+        return [...mentorLinks, ...messagesLink];
       case "STUDENT":
-        return studentLinks;
+        return [...studentLinks, ...messagesLink];
       case "ADMIN":
-        return adminLinks;
+        return [...adminLinks, ...messagesLink];
       default:
         return [];
     }
