@@ -66,7 +66,7 @@ export default function EditTaskModal({ task, onClose, onSave }) {
     if (!newMessage.trim()) return;
 
     try {
-      const res = await api.post(`/task/${task.id}/messages`, {
+      const res = await api.post(`/messages/${task.id}/messages`, {
         content: newMessage,
       });
       setMessages((prev) => [res.data, ...prev]); // adiciona no topo

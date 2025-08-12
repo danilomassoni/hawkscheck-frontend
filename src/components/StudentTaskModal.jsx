@@ -5,11 +5,26 @@ export default function StudentTaskModal({ isOpen, onClose, task, onStatusUpdate
   const [status, setStatus] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  // Novos estados para mensagens
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
+
   useEffect(() => {
     if (task) {
       setStatus(task.status);
+      fetchMessages();  // busca mensagens sempre que a task muda
     }
   }, [task]);
+
+  // Função para buscar mensagens da task
+  const fetchMessages = async () => {
+    try {
+      const res = await api.get(`/messages/task/${task.id}?page=0&size=50`);
+      setMessages(res.data.content);
+    } catch (err) {
+      console.error("Erro ao buscar mensagens:", err);
+    }
+  };
 
   const handleStatusChange = (e) => {
     setStatus(e.target.value);
@@ -21,8 +36,8 @@ export default function StudentTaskModal({ isOpen, onClose, task, onStatusUpdate
     try {
       await api.put(`/task/${task.id}/status`, { status });
       alert("Status atualizado com sucesso.");
-      onStatusUpdated(); // Notifica o parent para recarregar a lista
-      onClose();         // Fecha o modal
+      onStatusUpdated();
+      onClose();
     } catch (err) {
       console.error("Erro ao atualizar status:", err);
       alert("Erro ao atualizar status.");
@@ -31,12 +46,28 @@ export default function StudentTaskModal({ isOpen, onClose, task, onStatusUpdate
     }
   };
 
+  // Função para enviar mensagem
+  const handleSendMessage = async () => {
+    if (!newMessage.trim()) return;
+
+    try {
+      const res = await api.post(`/messages/${task.id}/messages`, { content: newMessage });
+      // adiciona nova mensagem no topo da lista
+      setMessages((prev) => [res.data, ...prev]);
+      setNewMessage("");
+    } catch (err) {
+      console.error("Erro ao enviar mensagem:", err);
+      alert("Erro ao enviar mensagem.");
+    }
+  };
+
   if (!isOpen || !task) return null;
 
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-30 flex items-center justify-center">
-      <div className="bg-white p-6 rounded shadow w-full max-w-xl">
+      <div className="bg-white p-6 rounded shadow w-full max-w-xl max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-bold mb-4">Detalhes da Tarefa</h2>
+
         <div className="space-y-2">
           <p><strong>Título:</strong> {task.title}</p>
           <p><strong>Tópico:</strong> {task.topic}</p>
@@ -80,6 +111,41 @@ export default function StudentTaskModal({ isOpen, onClose, task, onStatusUpdate
             </button>
           </div>
         </form>
+
+        {/* Módulo de mensagens */}
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold mb-2">Mensagens</h3>
+
+          <div className="flex gap-2 mb-3">
+            <input
+              type="text"
+              className="flex-1 p-2 border rounded"
+              placeholder="Escreva uma mensagem..."
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+            />
+            <button
+              onClick={handleSendMessage}
+              className="bg-green-600 text-white px-4 py-2 rounded"
+            >
+              Enviar
+            </button>
+          </div>
+
+          <div className="space-y-2 max-h-48 overflow-y-auto">
+            {messages.length === 0 && (
+              <p className="text-gray-500">Nenhuma mensagem registrada ainda.</p>
+            )}
+            {messages.map((msg) => (
+              <div key={msg.id} className="border rounded p-2 bg-gray-50">
+                <p>{msg.content}</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  {msg.authorName} — {new Date(msg.timestamp).toLocaleString("pt-BR")}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
