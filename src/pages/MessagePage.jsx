@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import api from "../api/api";
 
 export default function MessagesPage() {
@@ -8,8 +8,8 @@ export default function MessagesPage() {
   const [newMessage, setNewMessage] = useState("");
   const [query, setQuery] = useState("");
   const [users, setUsers] = useState([]);
+  const bottomRef = useRef(null);
 
-  // Buscar contatos de conversa já existentes
   const fetchContacts = async () => {
     try {
       const res = await api.get("/messages/contacts");
@@ -22,32 +22,25 @@ export default function MessagesPage() {
     }
   };
 
-  // Buscar mensagens trocadas com selectedUser
   const fetchMessages = async (user) => {
     if (!user) return;
-
     try {
       const [inboxRes, sentRes] = await Promise.all([
         api.get("/messages/inbox"),
         api.get("/messages/sent"),
       ]);
-
       const userId = user.id;
-
       const filteredMessages = [
-        ...inboxRes.data.filter(m => m.senderId === userId),
-        ...sentRes.data.filter(m => m.recipientId === userId)
+        ...inboxRes.data.filter((m) => m.senderId === userId),
+        ...sentRes.data.filter((m) => m.recipientId === userId),
       ];
-
       filteredMessages.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-
       setMessages(filteredMessages);
     } catch (err) {
       console.error("Erro ao buscar mensagens:", err);
     }
   };
 
-  // Busca usuários conforme o query (para nova conversa)
   const searchUsers = async () => {
     if (!query.trim()) {
       setUsers([]);
@@ -61,34 +54,26 @@ export default function MessagesPage() {
     }
   };
 
-  // No mount, buscar contatos
-  useEffect(() => {
-    fetchContacts();
-  }, []);
+  useEffect(() => { fetchContacts(); }, []);
+  useEffect(() => { fetchMessages(selectedUser); }, [selectedUser]);
+  useEffect(() => { searchUsers(); }, [query]);
 
-  // Quando selectedUser muda, buscar mensagens
+  // Scroll automático sempre que mensagens mudam
   useEffect(() => {
-    fetchMessages(selectedUser);
-  }, [selectedUser]);
-
-  // Quando query muda, buscar usuários para nova conversa
-  useEffect(() => {
-    searchUsers();
-  }, [query]);
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !selectedUser) return;
-
     try {
       const res = await api.post("/messages", {
         recipientId: selectedUser.id,
         content: newMessage,
       });
-
-      setMessages(prev => [...prev, res.data]);
+      setMessages((prev) => [...prev, res.data]);
       setNewMessage("");
-
-      // Atualiza contatos para incluir novo contato, se for novo
       fetchContacts();
     } catch (err) {
       console.error("Erro ao enviar mensagem:", err);
@@ -97,22 +82,21 @@ export default function MessagesPage() {
 
   return (
     <div className="flex h-screen">
-      {/* Contatos e busca usuários */}
+      {/* Lista de contatos */}
       <div className="w-1/3 border-r p-4 flex flex-col">
         <input
           type="text"
           placeholder="Buscar usuários pelo nome ou email"
           value={query}
-          onChange={e => setQuery(e.target.value)}
+          onChange={(e) => setQuery(e.target.value)}
           className="p-2 border rounded mb-4"
         />
-
         <div className="flex-grow overflow-y-auto mb-4">
           {query.trim() === "" ? (
             <>
               <h3 className="font-semibold mb-2">Contatos</h3>
               {contacts.length === 0 && <p>Nenhum contato encontrado.</p>}
-              {contacts.map(user => (
+              {contacts.map((user) => (
                 <div
                   key={user.id}
                   className={`p-2 cursor-pointer rounded hover:bg-blue-100 ${
@@ -130,7 +114,7 @@ export default function MessagesPage() {
             <>
               <h3 className="font-semibold mb-2">Buscar usuários</h3>
               {users.length === 0 && <p>Nenhum usuário encontrado.</p>}
-              {users.map(user => (
+              {users.map((user) => (
                 <div
                   key={user.id}
                   className={`p-2 cursor-pointer rounded hover:bg-blue-100 ${
@@ -154,14 +138,18 @@ export default function MessagesPage() {
           <p className="text-gray-600">Selecione um usuário para iniciar a conversa.</p>
         ) : (
           <>
-            <div className="border-b pb-2 mb-4">
+            {/* Cabeçalho */}
+            <div className="border-b pb-2 mb-4 flex-shrink-0">
               <h2 className="text-xl font-semibold">{selectedUser.name}</h2>
               <p className="text-sm text-gray-600">{selectedUser.email}</p>
             </div>
 
-            <div className="flex-grow overflow-y-auto mb-4 space-y-2">
-              {messages.length === 0 && <p className="text-gray-600">Nenhuma mensagem ainda.</p>}
-              {messages.map(msg => (
+            {/* Área das mensagens */}
+            <div className="flex-1 overflow-y-auto space-y-2 pr-2">
+              {messages.length === 0 && (
+                <p className="text-gray-600">Nenhuma mensagem ainda.</p>
+              )}
+              {messages.map((msg) => (
                 <div
                   key={msg.id}
                   className={`p-2 rounded max-w-xs ${
@@ -169,7 +157,10 @@ export default function MessagesPage() {
                       ? "bg-gray-200 self-start"
                       : "bg-blue-600 text-white self-end"
                   }`}
-                  style={{ alignSelf: msg.senderId === selectedUser.id ? "flex-start" : "flex-end" }}
+                  style={{
+                    alignSelf:
+                      msg.senderId === selectedUser.id ? "flex-start" : "flex-end",
+                  }}
                 >
                   <p>{msg.content}</p>
                   <small className="text-xs text-gray-600">
@@ -177,16 +168,19 @@ export default function MessagesPage() {
                   </small>
                 </div>
               ))}
+              {/* marcador invisível para scroll automático */}
+              <div ref={bottomRef} />
             </div>
 
-            <div className="flex gap-2">
+            {/* Campo de envio fixo */}
+            <div className="flex gap-2 pt-2 border-t mt-2 flex-shrink-0 bg-white">
               <input
                 type="text"
                 placeholder="Digite uma mensagem"
                 className="flex-grow border p-2 rounded"
                 value={newMessage}
-                onChange={e => setNewMessage(e.target.value)}
-                onKeyDown={e => {
+                onChange={(e) => setNewMessage(e.target.value)}
+                onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
                     handleSendMessage();

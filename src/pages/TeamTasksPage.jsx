@@ -11,6 +11,22 @@ const statusLabels = {
   CANCELADA: "Cancelada",
 };
 
+// Cores por prioridade
+const priorityColors = {
+  BAIXA: "bg-blue-200",
+  MEDIA: "bg-green-200",
+  ALTA: "bg-red-200",
+  URGENTE: "bg-purple-200",
+};
+
+// Peso para ordenar por prioridade (maior valor = maior prioridade)
+const priorityWeight = {
+  URGENTE: 4,
+  ALTA: 3,
+  MEDIA: 2,
+  BAIXA: 1,
+};
+
 export default function TeamTasksPage() {
   const { teamId } = useParams();
   const [tasks, setTasks] = useState([]);
@@ -24,7 +40,7 @@ export default function TeamTasksPage() {
   const [filterPriority, setFilterPriority] = useState("");
   const [filterEndDate, setFilterEndDate] = useState("");
   const [searchText, setSearchText] = useState("");
-  const [filterStudent, setFilterStudent] = useState(""); // 👈 Novo estado
+  const [filterStudent, setFilterStudent] = useState("");
 
   const fetchTasks = async () => {
     try {
@@ -57,11 +73,12 @@ export default function TeamTasksPage() {
 
   const aplicarFiltro = () => {
     const filtradas = tasks.filter((task) => {
-          const studentNames = task.studentNames || [];
-    const alunoIncluido = filterStudent
-      ? studentNames.some(name =>
-          name.toLowerCase().includes(filterStudent.toLowerCase()))
-      : true;
+      const studentNames = task.studentNames || [];
+      const alunoIncluido = filterStudent
+        ? studentNames.some((name) =>
+            name.toLowerCase().includes(filterStudent.toLowerCase())
+          )
+        : true;
       return (
         (!filterStatus || task.status === filterStatus) &&
         (!filterPriority || task.priority === filterPriority) &&
@@ -80,10 +97,11 @@ export default function TeamTasksPage() {
     setFilterPriority("");
     setFilterEndDate("");
     setSearchText("");
-    setFilterStudent(""); // 👈 limpar também esse campo
+    setFilterStudent("");
     setFilteredTasks(tasks);
   };
 
+  // Agrupa tarefas por status
   const groupedTasks = {
     NAO_INICIADA: [],
     EM_ANDAMENTO: [],
@@ -95,6 +113,13 @@ export default function TeamTasksPage() {
     if (groupedTasks[task.status]) {
       groupedTasks[task.status].push(task);
     }
+  });
+
+  // Ordena por prioridade dentro de cada grupo
+  Object.keys(groupedTasks).forEach((status) => {
+    groupedTasks[status].sort(
+      (a, b) => priorityWeight[b.priority] - priorityWeight[a.priority]
+    );
   });
 
   if (loading) return <p className="p-6">Carregando tarefas...</p>;
@@ -113,7 +138,11 @@ export default function TeamTasksPage() {
 
       {/* Filtros */}
       <div className="flex flex-wrap gap-4 mb-6">
-        <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="border p-2 rounded">
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          className="border p-2 rounded"
+        >
           <option value="">Status</option>
           <option value="NAO_INICIADA">Não Iniciada</option>
           <option value="EM_ANDAMENTO">Em andamento</option>
@@ -121,7 +150,11 @@ export default function TeamTasksPage() {
           <option value="CANCELADA">Cancelada</option>
         </select>
 
-        <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)} className="border p-2 rounded">
+        <select
+          value={filterPriority}
+          onChange={(e) => setFilterPriority(e.target.value)}
+          className="border p-2 rounded"
+        >
           <option value="">Prioridade</option>
           <option value="BAIXA">Baixa</option>
           <option value="MEDIA">Média</option>
@@ -180,7 +213,9 @@ export default function TeamTasksPage() {
                   <li
                     key={task.id}
                     onClick={() => setSelectedTask(task)}
-                    className="bg-white p-3 rounded shadow hover:bg-gray-50 cursor-pointer"
+                    className={`p-3 rounded shadow hover:opacity-90 cursor-pointer ${
+                      priorityColors[task.priority] || "bg-white"
+                    }`}
                   >
                     <h3 className="font-medium">{task.title}</h3>
                     <p className="text-xs text-gray-600">{task.description}</p>
