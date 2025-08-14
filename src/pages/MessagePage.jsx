@@ -163,7 +163,7 @@ export default function MessagesPage() {
                   }}
                 >
                   <p>{msg.content}</p>
-                  <small className="text-xs text-gray-600">
+                  <small className="text-xs text-black-600">
                     {new Date(msg.createdAt).toLocaleString()}
                   </small>
                 </div>
