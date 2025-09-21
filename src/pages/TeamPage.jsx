@@ -38,7 +38,7 @@ export default function TeamPage() {
     setModalOpen(false);
     fetchTeams();
   };
-
+// return
   if (loading) return <p>Carregando...</p>;
 
   return (
