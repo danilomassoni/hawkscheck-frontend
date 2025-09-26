@@ -10,6 +10,7 @@ export default function Sidebar() {
   const mentorLinks = [
     { to: "/team", label: "Minha Equipe" },
     { to: "/my-students", label: "Alunos" },
+    { to: "/spaces", label: "Espaços" },
   ];
 
   const studentLinks = [
@@ -21,6 +22,7 @@ export default function Sidebar() {
   const adminLinks = [
     { to: "/admin/users", label: "Gerenciar Usuários" },
     { to: "/admin/reports", label: "Relatórios" },
+    { to: "/spaces", label: "Espaços" },
   ];
 
   // Novo link para Mensagens
