@@ -19,6 +19,9 @@ import StudentAttendancePage from "./pages/StudentAttendancePage";
 import HistoricalStudentTasksPage from "./pages/HistoricalStudentTasksPage";
 import MessagePage from "./pages/MessagePage";
 import SpacesPage from "./pages/SpacesPage";
+import CollaboratorsPage from "./pages/CollaboratorsPage";
+import SpaceDetailsPage from "./pages/SpaceDetailsPage";
+
 
 
 function App() {
@@ -48,6 +51,8 @@ function App() {
         <Route path="/student-tasks/:id" element={<HistoricalStudentTasksPage />} />
         <Route path="/messages" element={<MessagePage />} />
         <Route path="/spaces" element={<SpacesPage />} />
+        <Route path="/collaborators" element={<CollaboratorsPage />} />
+        <Route path="/spaces/:id" element={<SpaceDetailsPage />} />
 
         
       </Route>

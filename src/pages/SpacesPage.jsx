@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 import SpaceForm from "../components/SpaceForm";
 
 export default function SpacesPage() {
   const [spaces, setSpaces] = useState([]);
-  const [selectedSpace, setSelectedSpace] = useState(null); // espaço para editar
+  const [selectedSpace, setSelectedSpace] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
 
-  // Buscar todos os espaços ao carregar a página
   useEffect(() => {
     fetchSpaces();
   }, []);
@@ -32,7 +33,7 @@ export default function SpacesPage() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Tem certeza que deseja excluir este espaço?")) return;
+    if (!window.confirm("Deseja realmente excluir este espaço?")) return;
     try {
       await api.delete(`/spaces/${id}`);
       fetchSpaces();
@@ -45,13 +46,9 @@ export default function SpacesPage() {
   const handleSave = async (data) => {
     try {
       if (selectedSpace) {
-        // Editar
         await api.put(`/spaces/${selectedSpace.id}`, data);
-        alert("Espaço atualizado com sucesso!");
       } else {
-        // Criar
         await api.post("/spaces", data);
-        alert("Espaço criado com sucesso!");
       }
       setIsModalOpen(false);
       fetchSpaces();
@@ -59,6 +56,10 @@ export default function SpacesPage() {
       console.error("Erro ao salvar espaço:", err);
       alert("Erro ao salvar espaço.");
     }
+  };
+
+  const handleViewEquipments = (spaceId) => {
+    navigate(`/spaces/${spaceId}`);
   };
 
   return (
@@ -73,7 +74,6 @@ export default function SpacesPage() {
         </button>
       </div>
 
-      {/* Tabela de espaços */}
       <table className="w-full bg-white shadow-md rounded overflow-hidden">
         <thead className="bg-gray-200">
           <tr>
@@ -85,8 +85,20 @@ export default function SpacesPage() {
           </tr>
         </thead>
         <tbody>
+          {spaces.length === 0 && (
+            <tr>
+              <td colSpan="5" className="p-4 text-center text-gray-500">
+                Nenhum espaço cadastrado.
+              </td>
+            </tr>
+          )}
+
           {spaces.map((space) => (
-            <tr key={space.id} className="border-b">
+            <tr
+              key={space.id}
+              className="border-b hover:bg-gray-50 cursor-pointer transition"
+              onClick={() => handleViewEquipments(space.id)}
+            >
               <td className="p-3">{space.name}</td>
               <td className="p-3">{space.location}</td>
               <td className="p-3">{space.usageType}</td>
@@ -95,13 +107,19 @@ export default function SpacesPage() {
               </td>
               <td className="p-3 text-center space-x-2">
                 <button
-                  onClick={() => handleEdit(space)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEdit(space);
+                  }}
                   className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded"
                 >
                   Editar
                 </button>
                 <button
-                  onClick={() => handleDelete(space.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(space.id);
+                  }}
                   className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
                 >
                   Excluir
@@ -109,18 +127,9 @@ export default function SpacesPage() {
               </td>
             </tr>
           ))}
-
-          {spaces.length === 0 && (
-            <tr>
-              <td colSpan="5" className="p-4 text-center text-gray-500">
-                Nenhum espaço cadastrado.
-              </td>
-            </tr>
-          )}
         </tbody>
       </table>
 
-      {/* Modal */}
       {isModalOpen && (
         <SpaceForm
           onClose={() => setIsModalOpen(false)}

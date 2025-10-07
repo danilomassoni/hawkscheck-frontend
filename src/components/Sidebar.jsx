@@ -11,6 +11,7 @@ export default function Sidebar() {
     { to: "/team", label: "Minha Equipe" },
     { to: "/my-students", label: "Alunos" },
     { to: "/spaces", label: "Espaços" },
+    { to: "/collaborators", label: "Colaboradores" }, 
   ];
 
   const studentLinks = [
@@ -23,6 +24,7 @@ export default function Sidebar() {
     { to: "/admin/users", label: "Gerenciar Usuários" },
     { to: "/admin/reports", label: "Relatórios" },
     { to: "/spaces", label: "Espaços" },
+    { to: "/collaborators", label: "Colaboradores" },
   ];
 
   // Novo link para Mensagens
