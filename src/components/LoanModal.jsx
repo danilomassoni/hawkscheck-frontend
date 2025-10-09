@@ -7,7 +7,7 @@ export default function LoanModal({ equipment, onClose, onSuccess }) {
   const [loadingCollaborators, setLoadingCollaborators] = useState(true);
   const [formData, setFormData] = useState({
     collaboratorId: "",
-    loanDate: new Date().toISOString().split("T")[0],
+    loanDate: new Date().toISOString().slice(0, 19),
     signedPaper: false,
     notes: "",
   });
@@ -40,28 +40,34 @@ export default function LoanModal({ equipment, onClose, onSuccess }) {
     }));
   };
 
-  // 🔹 Envia o empréstimo
+  // Envia o empréstimo
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!formData.collaboratorId) {
-      alert("Selecione um colaborador antes de confirmar.");
-      return;
-    }
+  e.preventDefault();
+  if (!formData.collaboratorId) {
+    alert("Selecione um colaborador antes de confirmar.");
+    return;
+  }
 
-    setLoading(true);
-    try {
-      console.log("📦 Enviando empréstimo:", formData);
-      const res = await api.put(`/equipments/${equipment.id}/loan`, formData);
-      console.log("✅ Empréstimo registrado:", res.data);
-      onSuccess(res.data);
-      onClose();
-    } catch (err) {
-      console.error("❌ Erro ao registrar empréstimo:", err);
-      alert("Erro ao registrar empréstimo.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  try {
+    // Garante o formato LocalDateTime (com hora)
+    const payload = {
+      ...formData,
+      loanDate: `${formData.loanDate}T00:00:00`
+    };
+
+    console.log("📦 Enviando empréstimo:", payload);
+    const res = await api.put(`/equipments/${equipment.id}/loan`, payload);
+    console.log("✅ Empréstimo registrado:", res.data);
+    onSuccess(res.data);
+    onClose();
+  } catch (err) {
+    console.error("❌ Erro ao registrar empréstimo:", err);
+    alert("Erro ao registrar empréstimo.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
@@ -100,11 +106,20 @@ export default function LoanModal({ equipment, onClose, onSuccess }) {
                 required
               >
                 <option value="">Selecione...</option>
-                {collaborators.map((c) => (
+                {collaborators.map((c) => {
+                const displayName =
+                  c.name ||
+                  c.fullName ||
+                  c.user?.name ||
+                  c.user?.fullName ||
+                  c.user?.username ||
+                  `Colaborador ${c.id}`;
+                return (
                   <option key={c.id} value={c.id}>
-                    {c.name || c.fullName || `Colaborador ${c.id}`}
+                    {c.fullName || `${c.firstName} ${c.lastName}` || `Colaborador ${c.id}`}
                   </option>
-                ))}
+                );
+              })}
               </select>
             </div>
 

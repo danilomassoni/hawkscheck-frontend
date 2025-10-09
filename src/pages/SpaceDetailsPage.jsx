@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/api";
 import EquipmentModal from "../components/EquipmentModal";
+import EditEquipmentModal from "../components/EditEquipmentModal";
 import LoanModal from "../components/LoanModal";
 
 export default function SpaceDetailsPage() {
@@ -11,8 +12,13 @@ export default function SpaceDetailsPage() {
   const [space, setSpace] = useState(null);
   const [equipments, setEquipments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Modais
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isLoanModalOpen, setIsLoanModalOpen] = useState(false);
+
+  // Equipamento selecionado
   const [selectedEquipment, setSelectedEquipment] = useState(null);
 
   // 🔹 Carrega espaço e equipamentos
@@ -20,10 +26,11 @@ export default function SpaceDetailsPage() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const spaceRes = await api.get(`/spaces/${id}`);
+        const [spaceRes, eqRes] = await Promise.all([
+          api.get(`/spaces/${id}`),
+          api.get(`/equipments/space/${id}`)
+        ]);
         setSpace(spaceRes.data);
-
-        const eqRes = await api.get(`/equipments/space/${id}`);
         setEquipments(eqRes.data);
       } catch (err) {
         console.error("Erro ao carregar espaço ou equipamentos:", err);
@@ -39,11 +46,17 @@ export default function SpaceDetailsPage() {
     if (!window.confirm("Deseja realmente excluir este equipamento?")) return;
     try {
       await api.delete(`/equipments/${equipmentId}`);
-      setEquipments(equipments.filter((eq) => eq.id !== equipmentId));
+      setEquipments((prev) => prev.filter((eq) => eq.id !== equipmentId));
     } catch (err) {
       console.error("Erro ao excluir equipamento:", err);
       alert("Erro ao excluir equipamento.");
     }
+  };
+
+  // 🔹 Abrir modal de edição
+  const handleEditEquipment = (equipment) => {
+    setSelectedEquipment(equipment);
+    setIsEditModalOpen(true);
   };
 
   // 🔹 Abrir modal de empréstimo
@@ -56,9 +69,9 @@ export default function SpaceDetailsPage() {
   const handleReturnEquipment = async (equipmentId) => {
     if (!window.confirm("Confirmar devolução deste equipamento?")) return;
     try {
-      await api.put(`/equipments/${equipmentId}/return`);
+      const res = await api.put(`/equipments/${equipmentId}/return`);
       const updated = equipments.map((eq) =>
-        eq.id === equipmentId ? { ...eq, status: "IN_LOCO", loanDate: null, collaboratorName: null } : eq
+        eq.id === equipmentId ? res.data : eq
       );
       setEquipments(updated);
     } catch (err) {
@@ -95,7 +108,7 @@ export default function SpaceDetailsPage() {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Equipamentos</h2>
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => setIsCreateModalOpen(true)}
           className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded"
         >
           Novo Equipamento
@@ -111,7 +124,7 @@ export default function SpaceDetailsPage() {
             <th className="p-3 text-left">Marca / Modelo</th>
             <th className="p-3 text-left">Condição</th>
             <th className="p-3 text-left">Status</th>
-            <th className="p-3 text-left">Colaborador</th>
+            <th className="p-3 text-left">Locado Para</th>
             <th className="p-3 text-center">Ações</th>
           </tr>
         </thead>
@@ -140,9 +153,15 @@ export default function SpaceDetailsPage() {
                   {eq.status === "LOANED" ? eq.collaboratorName || "—" : "—"}
                 </td>
                 <td className="p-3 text-center space-x-2">
-                  <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded">
+                  {/* Editar */}
+                  <button
+                    onClick={() => handleEditEquipment(eq)}
+                    className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded"
+                  >
                     Editar
                   </button>
+
+                  {/* Excluir */}
                   <button
                     onClick={() => handleDeleteEquipment(eq.id)}
                     className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
@@ -150,6 +169,7 @@ export default function SpaceDetailsPage() {
                     Excluir
                   </button>
 
+                  {/* Emprestar / Devolver */}
                   {eq.status === "IN_LOCO" ? (
                     <button
                       onClick={() => handleOpenLoanModal(eq)}
@@ -172,16 +192,33 @@ export default function SpaceDetailsPage() {
         </tbody>
       </table>
 
-      {/* Modal de novo equipamento */}
-      {isModalOpen && (
+      {/* Modal: Novo equipamento */}
+      {isCreateModalOpen && (
         <EquipmentModal
           spaceId={space.id}
-          onClose={() => setIsModalOpen(false)}
-          onSuccess={(newEq) => setEquipments([...equipments, newEq])}
+          onClose={() => setIsCreateModalOpen(false)}
+          onSuccess={(newEq) => setEquipments((prev) => [...prev, newEq])}
         />
       )}
 
-      {/* Modal de empréstimo */}
+      {/* Modal: Editar equipamento */}
+      {isEditModalOpen && selectedEquipment && (
+        <EditEquipmentModal
+          equipment={selectedEquipment}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setSelectedEquipment(null);
+          }}
+          onSuccess={(updatedEq) => {
+            const updatedList = equipments.map((eq) =>
+              eq.id === updatedEq.id ? updatedEq : eq
+            );
+            setEquipments(updatedList);
+          }}
+        />
+      )}
+
+      {/* Modal: Empréstimo */}
       {isLoanModalOpen && selectedEquipment && (
         <LoanModal
           equipment={selectedEquipment}
@@ -189,9 +226,9 @@ export default function SpaceDetailsPage() {
             setIsLoanModalOpen(false);
             setSelectedEquipment(null);
           }}
-          onSuccess={(updatedEquipment) => {
+          onSuccess={(updatedEq) => {
             const updatedList = equipments.map((eq) =>
-              eq.id === updatedEquipment.id ? updatedEquipment : eq
+              eq.id === updatedEq.id ? updatedEq : eq
             );
             setEquipments(updatedList);
           }}
